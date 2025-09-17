@@ -1,350 +1,188 @@
-<!--
-LongTextDisplay_Webpage.html
-Single-file webpage to display a long text (~2210 words) with editable Name & Class above.
-How to use:
- - Open this file in a browser.
- - Click the pencil icons next to Name / Class to edit, or use the "Edit content" button to paste your long text.
- - Save / Print using the buttons.
-
-Features included:
- - Editable Name & Class (inline edit)
- - Large, readable article area (suitable for ~2210 words)
- - Reading progress bar
- - Reading time estimate
- - Font size controls and line-height toggle
- - Toggle: Light / Dark (Night) mode
- - Drop cap and subtle entrance animation
- - Search within text (find & highlight)
- - Highlight selected text and clear highlights
- - Print-friendly stylesheet
- - Simple CSS-only accent animations for attention-grabbing
- - Responsive layout for mobile/tablet/desktop
-
-Replace the placeholder values inside the <main> or click Edit to paste your text.
--->
-
 <!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Teks Panjang — Nama & Kelas</title>
+  <title>My paragraph</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#fbfbff; --card:#ffffff; --muted:#6b7280; --accent:#0ea5a4; --accent-2:#7c3aed; --glass: rgba(255,255,255,0.6);
+      --bg:#fbfbff; --card:#ffffff; --muted:#6b7280; --accent:#0ea5a4; --accent-2:#7c3aed; 
+      --text:#0f172a;
       --max-w:900px; --read-bar-height:6px;
     }
-    [data-theme="dark"]{ --bg:#0b1020; --card:#071127; --muted:#9aa6bf; --accent:#34d399; --accent-2:#818cf8; --glass: rgba(255,255,255,0.03);} 
+    [data-theme="dark"]{ 
+      --bg:#0b1020; --card:#071127; --muted:#9aa6bf; --accent:#34d399; --accent-2:#818cf8;
+      --text:#f3f4f6;
+    } 
     *{box-sizing:border-box}
-    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:linear-gradient(180deg,var(--bg), #f6f7fb); color: #0f172a; line-height:1.65}
-    header{position:sticky; top:0; z-index:30; backdrop-filter: blur(6px); background:linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2)); border-bottom:1px solid rgba(0,0,0,0.04); padding:12px 18px; display:flex; gap:12px; align-items:center}
-    [data-theme="dark"] header{background:linear-gradient(90deg, rgba(7,17,39,0.6), rgba(7,17,39,0.2)); border-bottom:1px solid rgba(255,255,255,0.04); color:var(--muted)}
-    .brand{font-weight:800; font-size:16px; letter-spacing:0.2px}
+    body{font-family:Inter, system-ui, Arial; margin:0; background:var(--bg); color:var(--text); line-height:1.65; overflow-x:hidden}
+    header{position:sticky; top:0; z-index:30; backdrop-filter: blur(6px); background:rgba(255,255,255,0.4); padding:12px 18px; display:flex; gap:12px; align-items:center}
+    [data-theme="dark"] header{background:rgba(7,17,39,0.4); color:var(--muted)}
+    .brand{font-weight:800; font-size:16px;}
     .controls{margin-left:auto; display:flex; gap:8px; align-items:center}
-    button{background:transparent; border:1px solid rgba(15,23,42,0.06); padding:8px 10px; border-radius:10px; cursor:pointer}
-    [data-theme="dark"] button{border-color: rgba(255,255,255,0.06)}
+    button{background:transparent; border:1px solid rgba(15,23,42,0.06); padding:6px 10px; border-radius:8px; cursor:pointer}
+    [data-theme="dark"] button{border-color: rgba(255,255,255,0.1); color:var(--text)}
     .container{max-width:var(--max-w); margin:28px auto; padding:0 18px}
 
-    .meta{display:flex; gap:12px; align-items:baseline; flex-wrap:wrap}
-    .meta .label{font-size:13px; color:var(--muted)}
     .pill{display:inline-flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px; background:var(--card); box-shadow:0 6px 18px rgba(11,15,40,0.05);}
-
-    .nameclass{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
     .editable{font-weight:700; font-size:20px}
     .sub{font-weight:600; color:var(--muted)}
-    .edit-icon{opacity:0.85; margin-left:6px; font-size:14px}
 
     main{background:var(--card); border-radius:14px; padding:28px; margin-top:18px; box-shadow: 0 10px 30px rgba(11,15,40,0.06)}
     .lead{font-size:18px; margin:0 0 18px 0; color:var(--muted)}
     article{font-size:18px; color:inherit}
-    .dropcap:first-letter{float:left; font-size:4.2rem; line-height:1; padding-right:12px; font-weight:800; color:var(--accent);}
+    .dropcap:first-letter{float:left; font-size:4rem; line-height:1; padding-right:12px; font-weight:800; color:var(--accent);}
 
-    .toolbar{display:flex; gap:8px; align-items:center; margin-bottom:14px}
-    .progress-wrap{position:fixed; left:0; right:0; top:56px; height:var(--read-bar-height); z-index:40; background:transparent}
-    .progress{height:100%; width:0%; background:linear-gradient(90deg,var(--accent), var(--accent-2)); box-shadow:0 4px 12px rgba(14,165,164,0.12); transition:width 120ms linear}
-
-    .floating-actions{position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:10px; z-index:40}
-    .action{background:var(--card); padding:10px; border-radius:12px; box-shadow: 0 8px 20px rgba(11,15,40,0.08);}
-
-    .find-box{display:flex; gap:8px; align-items:center}
-    input[type=search], textarea, input[type=text]{padding:10px 12px; border-radius:10px; border:1px solid rgba(11,15,40,0.06); min-width:240px}
-    [data-theme="dark"] input[type=search], [data-theme="dark"] textarea, [data-theme="dark"] input[type=text]{border-color: rgba(255,255,255,0.06); background:transparent; color:inherit}
-    .sr{font-size:13px; color:var(--muted)}
-
-    .highlight{background:rgba(250,215,75,0.3); padding:0 2px; border-radius:4px}
-
-    .info-row{display:flex; gap:12px; align-items:center; margin-top:8px}
-
-    /* responsive */
-    @media (max-width:640px){ .meta{flex-direction:column; align-items:flex-start} header{padding:10px} .progress-wrap{top:64px} }
-
-    /* print */
-    @media print{
-      header, .floating-actions, .progress-wrap{display:none}
-      body{background:white}
-      main{box-shadow:none; border-radius:0}
-      .pill{box-shadow:none}
-    }
-
+    /* canvas animasi */
+    #animTop, #animBottom{position:absolute; left:0; width:100%; height:200px; z-index:0;}
+    #animTop{top:0;}
+    #animBottom{bottom:0; height:160px;}
+    body{position:relative; padding-bottom:180px;}
+    header, .container{position:relative; z-index:10;}
   </style>
 </head>
 <body>
-  <div class="progress-wrap" aria-hidden="true"><div class="progress" id="progress"></div></div>
+  <!-- Canvas animasi -->
+  <canvas id="animTop"></canvas>
+  <canvas id="animBottom"></canvas>
+
   <header>
-    <div class="brand">TeksViewer</div>
-    <div class="sr">Pratinjau & cetak teks panjang</div>
+    <div class="brand">Welcome</div>
     <div class="controls">
-      <button id="toggleTheme" title="Toggle night mode">🌙</button>
-      <button id="editBtn" title="Edit content">✏️ Edit content</button>
-      <button id="printBtn" title="Print/Save as PDF">🖨️ Print</button>
+      <button id="toggleTheme">🌙/☀️</button>
     </div>
   </header>
 
   <div class="container">
-    <div class="meta">
-      <div class="pill nameclass" id="namepill">
-        <div>
-          <div class="label">Fakhri Ahmad Alfanani</div>
-          <div class="editable" id="studentName" contenteditable="false">Nama Siswa</div>
-        </div>
-        <div style="border-left:1px solid rgba(0,0,0,0.06); padding-left:12px;">
-          <div class="label">XII-12</div>
-          <div class="sub" id="studentClass" contenteditable="false">X IPA 1</div>
-        </div>
-        <button class="edit-icon" id="toggleEditMeta" title="Edit nama/kelas">✏️</button>
-      </div>
-      <div class="pill" style="margin-left:8px; align-items:center">
-        <div style="display:flex; flex-direction:column">
-          <div class="label">Estimasi waktu baca</div>
-          <div class="sub" id="readTime">— menit</div>
-        </div>
+    <div class="pill">
+      <div>
+        <div class="editable" id="studentName">Fakhri Ahmad Alfanani</div>
+        <div class="sub" id="studentClass">XII-12</div>
       </div>
     </div>
 
     <main>
-      <div class="toolbar">
-        <div class="find-box">
-          <input id="findInput" type="search" placeholder="Cari teks..." aria-label="Cari teks">
-          <button id="findBtn">Cari</button>
-          <button id="clearFind">Clear</button>
-        </div>
-
-        <div style="flex:1"></div>
-
-        <div class="sr">Tampilan</div>
-        <button id="incFont">A+</button>
-        <button id="decFont">A-</button>
-        <button id="toggleDropcap">Dropcap</button>
-        <button id="toggleSpacing">Rapat/Lapang</button>
-        <button id="highlightSel">Highlight</button>
-        <button id="clearHighlights">Clear Highlights</button>
-      </div>
-
-      <p class="lead" id="subtitle">Letakkan subtitle singkat di sini (opsional).</p>
-
-      <article id="article" class="dropcap" tabindex="0">
-        <!-- PLACEHOLDER TEXT (replace by clicking Edit content) -->
-        <p id="contentP">Berpikir komputasional adalah proses berpikir yang sistematis dan logis untuk mengidentifikasi, menganalisis, serta memecahkan masalah kompleks dengan cara memecahnya menjadi bagian-bagian sederhana agar lebih mudah dikelola. Konsep ini sebenarnya sudah ada sejak tahun 1950-an, diperkenalkan oleh Seymour Papert pada 1980, lalu dipopulerkan oleh Jeannette Wing pada 2006 yang menekankan bahwa kemampuan ini bermanfaat luas, bukan hanya untuk bidang komputer. Berpikir komputasional memberikan banyak manfaat, di antaranya meningkatkan kemampuan memecahkan masalah, mendorong kreativitas dan inovasi, mempermudah kolaborasi, mempersiapkan diri menghadapi tantangan dunia kerja, serta membantu belajar lebih efektif. Tujuan utamanya adalah memecahkan masalah kompleks dengan cara sistematis, merancang solusi kreatif, menganalisis data dengan efektif, meningkatkan komunikasi dan kolaborasi, serta melatih kemampuan belajar dan beradaptasi.
+      <p class="lead">Berpikir Komputasi</p>
+      <article id="article" class="dropcap">
+        <p id="contentP">
+          Berpikir komputasional adalah proses berpikir yang sistematis dan logis untuk mengidentifikasi, menganalisis, serta memecahkan masalah kompleks dengan cara memecahnya menjadi bagian-bagian sederhana agar lebih mudah dikelola. Konsep ini sebenarnya sudah ada sejak tahun 1950-an, diperkenalkan oleh Seymour Papert pada 1980, lalu dipopulerkan oleh Jeannette Wing pada 2006 yang menekankan bahwa kemampuan ini bermanfaat luas, bukan hanya untuk bidang komputer. Berpikir komputasional memberikan banyak manfaat, di antaranya meningkatkan kemampuan memecahkan masalah, mendorong kreativitas dan inovasi, mempermudah kolaborasi, mempersiapkan diri menghadapi tantangan dunia kerja, serta membantu belajar lebih efektif. Tujuan utamanya adalah memecahkan masalah kompleks dengan cara sistematis, merancang solusi kreatif, menganalisis data dengan efektif, meningkatkan komunikasi dan kolaborasi, serta melatih kemampuan belajar dan beradaptasi.
 
 Untuk bisa menerapkannya, terdapat empat fondasi utama yang perlu dipahami, yakni abstraksi (menyaring hal penting dari suatu masalah), algoritma (menyusun langkah terstruktur), dekomposisi (memecah masalah besar menjadi bagian kecil), dan pengenalan pola (menggunakan solusi yang sudah ada pada masalah sejenis). Orang yang menguasai kemampuan ini biasanya memiliki karakteristik sebagai pemecah masalah yang baik, berpikir logis dan analitis, kreatif dan inovatif, komunikatif, serta mampu berkolaborasi dengan baik.
 
 Metode penerapan berpikir komputasional meliputi enam tahapan, yaitu mendeteksi masalah, melakukan dekomposisi, membuat representasi atau model masalah, menyusun algoritma, mengimplementasikan solusi, dan mengevaluasi hasilnya. Contoh penerapannya dalam kehidupan sehari-hari sangat beragam, seperti menyusun rencana perjalanan yang efisien, menganalisis data penjualan bisnis, mengoptimalkan kinerja website, merancang game edukasi interaktif, hingga membangun sistem robotika. Dari sini dapat disimpulkan bahwa berpikir komputasional bukan hanya berguna di dunia teknologi, melainkan juga relevan untuk berbagai bidang kerja dan kehidupan. Dengan pola pikir ini, seseorang akan lebih terstruktur, efisien, dan inovatif dalam menghadapi setiap masalah.
         </p>
       </article>
-
-      <div class="info-row">
-        <div class="sr">Kata: <span id="wordCount">0</span></div>
-        <div class="sr">Karakter: <span id="charCount">0</span></div>
-      </div>
-
     </main>
-
-  </div>
-
-  <div class="floating-actions">
-    <div class="action"><button id="copyBtn">📋 Salin teks</button></div>
-    <div class="action"><button id="downloadBtn">⬇️ Download .txt</button></div>
-  </div>
-
-  <!-- Edit modal (simple) -->
-  <div id="editModal" style="position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(2,6,23,0.45); z-index:60; padding:18px">
-    <div style="width:100%; max-width:900px; background:var(--card); border-radius:12px; padding:18px; box-shadow:0 14px 40px rgba(2,6,23,0.4)">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px">
-        <strong>Edit content (tempel naskah ~2210 kata di sini)</strong>
-        <div style="display:flex; gap:8px"><button id="closeModal">Batal</button><button id="saveModal">Simpan</button></div>
-      </div>
-      <textarea id="editArea" style="width:100%; height:420px; padding:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); font-size:16px; line-height:1.6"></textarea>
-      <div style="margin-top:8px; font-size:13px; color:var(--muted)">Opsional: jika kamu sudah punya nama & kelas, edit kedua item di pojok atas (✏️).</div>
-    </div>
   </div>
 
   <script>
-    // Elements
-    const article = document.getElementById('article');
-    const contentP = document.getElementById('contentP');
-    const editBtn = document.getElementById('editBtn');
-    const editModal = document.getElementById('editModal');
-    const editArea = document.getElementById('editArea');
-    const saveModal = document.getElementById('saveModal');
-    const closeModal = document.getElementById('closeModal');
-    const wordCount = document.getElementById('wordCount');
-    const charCount = document.getElementById('charCount');
-    const readTime = document.getElementById('readTime');
-    const progress = document.getElementById('progress');
+    // --- Tema ---
     const toggleTheme = document.getElementById('toggleTheme');
-    const toggleEditMeta = document.getElementById('toggleEditMeta');
-    const studentName = document.getElementById('studentName');
-    const studentClass = document.getElementById('studentClass');
-    const findInput = document.getElementById('findInput');
-    const findBtn = document.getElementById('findBtn');
-    const clearFind = document.getElementById('clearFind');
-    const incFont = document.getElementById('incFont');
-    const decFont = document.getElementById('decFont');
-    const toggleDropcap = document.getElementById('toggleDropcap');
-    const toggleSpacing = document.getElementById('toggleSpacing');
-    const highlightSel = document.getElementById('highlightSel');
-    const clearHighlights = document.getElementById('clearHighlights');
-    const copyBtn = document.getElementById('copyBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const printBtn = document.getElementById('printBtn');
-
-    // init
-    function updateCounts(){
-      const text = contentP.innerText || '';
-      const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
-      wordCount.innerText = words;
-      charCount.innerText = text.length;
-      const minutes = Math.max(1, Math.round(words / 200)); // assume 200 wpm
-      readTime.innerText = minutes + ' menit';
-    }
-    updateCounts();
-
-    // Edit modal handlers
-    editBtn.addEventListener('click', ()=>{
-      editArea.value = contentP.innerText.trim();
-      editModal.style.display='flex';
-      editArea.focus();
-    });
-    closeModal.addEventListener('click', ()=>{ editModal.style.display='none'; });
-    saveModal.addEventListener('click', ()=>{
-      const txt = editArea.value.trim();
-      // basic safety: truncate to 100k chars
-      contentP.innerText = txt.substring(0,100000);
-      editModal.style.display='none';
-      updateCounts();
-      window.scrollTo({top:0, behavior:'smooth'});
-    });
-
-    // Editable meta toggles
-    toggleEditMeta.addEventListener('click', ()=>{
-      const editable = studentName.isContentEditable;
-      studentName.contentEditable = (!editable);
-      studentClass.contentEditable = (!editable);
-      studentName.focus();
-    });
-
-    // reading progress
-    window.addEventListener('scroll', ()=>{
-      const rect = article.getBoundingClientRect();
-      const h = article.scrollHeight - window.innerHeight + 200;
-      const scrolled = Math.min(1, Math.max(0, (window.scrollY - (article.offsetTop - 80)) / (article.scrollHeight - window.innerHeight + 80)));
-      progress.style.width = (scrolled*100) + '%';
-    });
-
-    // theme
     toggleTheme.addEventListener('click', ()=>{
       const t = document.documentElement.getAttribute('data-theme');
-      if(t === 'dark') document.documentElement.removeAttribute('data-theme');
+      if(t==='dark') document.documentElement.removeAttribute('data-theme');
       else document.documentElement.setAttribute('data-theme','dark');
     });
 
-    // find
-    findBtn.addEventListener('click', ()=>{
-      clearHighlightsFn();
-      const q = findInput.value.trim();
-      if(!q) return;
-      const inner = contentP.innerHTML;
-      const re = new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'), 'ig');
-      contentP.innerHTML = inner.replace(re, match=>`<span class="highlight">${match}</span>`);
-    });
-    clearFind.addEventListener('click', ()=>{ clearHighlightsFn(); findInput.value=''; });
+    // --- Canvas Animasi ---
+    const topCanvas = document.getElementById('animTop');
+    const bottomCanvas = document.getElementById('animBottom');
+    const ctxTop = topCanvas.getContext('2d');
+    const ctxBottom = bottomCanvas.getContext('2d');
 
-    function clearHighlightsFn(){
-      // unwrap highlight spans
-      const spans = contentP.querySelectorAll('span.highlight');
-      spans.forEach(s=>{ const text = document.createTextNode(s.innerText); s.parentNode.replaceChild(text, s); });
+    function resizeCanvas(){
+      topCanvas.width = window.innerWidth;
+      bottomCanvas.width = window.innerWidth;
+      topCanvas.height = 200;
+      bottomCanvas.height = 160;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // objek animasi
+    let stars=[], meteors=[], clouds=[], balloons=[];
+    for(let i=0;i<80;i++){
+      stars.push({x:Math.random()*window.innerWidth,y:Math.random()*200,r:Math.random()*1.5});
+    }
+    for(let i=0;i<10;i++){
+      clouds.push({x:Math.random()*window.innerWidth,y:Math.random()*80+20,s:50+Math.random()*100});
+    }
+    balloons.push({x:50,y:120});
+
+    function drawAurora(ctx,w,h){
+      ctx.beginPath();
+      ctx.moveTo(0,h/2);
+      for(let x=0;x<=w;x+=20){
+        const y = h/2 + Math.sin((x/50)+Date.now()/2000)*30;
+        ctx.lineTo(x,y);
+      }
+      ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
+      const grad = ctx.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0,"rgba(124,58,237,0.4)");
+      grad.addColorStop(1,"rgba(52,211,153,0.2)");
+      ctx.fillStyle=grad; ctx.fill();
     }
 
-    // font controls
-    incFont.addEventListener('click', ()=>{ adjustFont(1); });
-    decFont.addEventListener('click', ()=>{ adjustFont(-1); });
-    function adjustFont(delta){
-      const style = window.getComputedStyle(contentP).fontSize;
-      const cur = parseFloat(style);
-      contentP.style.fontSize = (cur + delta) + 'px';
+    function drawStars(ctx){
+      ctx.fillStyle="white";
+      stars.forEach(s=>{ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();});
     }
 
-    // dropcap toggle
-    toggleDropcap.addEventListener('click', ()=>{ article.classList.toggle('dropcap'); });
-    // spacing toggle
-    toggleSpacing.addEventListener('click', ()=>{ contentP.style.lineHeight = contentP.style.lineHeight === '1.8' ? '1.45' : '1.8'; });
+    function drawMeteor(ctx,w){
+      if(Math.random()<0.01){
+        meteors.push({x:Math.random()*w,y:0,len:80,sp:4});
+      }
+      ctx.strokeStyle="rgba(255,255,255,0.8)";
+      meteors.forEach(m=>{ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.len,m.y+m.len/2);ctx.stroke(); m.x+=m.sp; m.y+=m.sp/2;});
+      meteors=meteors.filter(m=>m.y<200);
+    }
 
-    // highlight selected text
-    highlightSel.addEventListener('click', ()=>{
-      const sel = window.getSelection();
-      if(!sel.rangeCount) return;
-      const range = sel.getRangeAt(0);
-      if(range.collapsed) return;
-      const span = document.createElement('span');
-      span.className = 'highlight';
-      range.surroundContents(span);
-      sel.removeAllRanges();
-    });
-    clearHighlights.addEventListener('click', clearHighlightsFn);
+    function drawRocket(ctx,w,h){
+      const t=Date.now()/800;
+      const x=w/2+Math.sin(t)*60, y=h-50-Math.sin(t/2)*20;
+      ctx.fillStyle="gray"; ctx.fillRect(x,y,12,30);
+      ctx.fillStyle="red"; ctx.beginPath();ctx.moveTo(x-4,y);ctx.lineTo(x+16,y);ctx.lineTo(x+6,y-20);ctx.closePath();ctx.fill();
+      ctx.fillStyle="orange"; ctx.beginPath();ctx.moveTo(x,y+30);ctx.lineTo(x+12,y+30);ctx.lineTo(x+6,y+45);ctx.closePath();ctx.fill();
+    }
 
-    // copy & download
-    copyBtn.addEventListener('click', async ()=>{
-      try{
-        await navigator.clipboard.writeText(contentP.innerText);
-        alert('Teks disalin ke clipboard');
-      }catch(e){ alert('Tidak bisa menyalin — coba manual'); }
-    });
-    downloadBtn.addEventListener('click', ()=>{
-      const blob = new Blob([contentP.innerText], {type:'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download = (studentName.innerText || 'naskah') + '.txt';
-      a.click(); URL.revokeObjectURL(url);
-    });
-    printBtn.addEventListener('click', ()=> window.print());
+    function drawClouds(ctx,w){
+      ctx.fillStyle="rgba(255,255,255,0.8)";
+      clouds.forEach(c=>{ctx.beginPath();ctx.arc(c.x,c.y,c.s/2,0,Math.PI*2);ctx.fill(); c.x+=0.2; if(c.x-c.s> w) c.x=-c.s;});
+    }
 
-    // Save counts on paste and on input
-    const observer = new MutationObserver(updateCounts);
-    observer.observe(contentP, {childList:true, subtree:true, characterData:true});
+    function drawBalloon(ctx){
+      balloons.forEach(b=>{
+        ctx.fillStyle="red"; ctx.beginPath();ctx.ellipse(b.x,b.y,15,20,0,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle="black"; ctx.beginPath();ctx.moveTo(b.x,b.y+20);ctx.lineTo(b.x,b.y+40);ctx.stroke();
+        b.y-=0.2; if(b.y<-20){b.y=150; b.x=Math.random()*window.innerWidth;}
+      });
+    }
 
-    // small keyboard shortcuts
-    document.addEventListener('keydown', (e)=>{
-      if(e.ctrlKey && e.key === 'f'){ e.preventDefault(); findInput.focus(); }
-      if(e.key === 'Escape'){ editModal.style.display='none'; }
-    });
-
-    // initial font & spacing
-    contentP.style.fontSize = '18px';
-    contentP.style.lineHeight = '1.6';
-
-    // ensure word count runs if user pastes via keyboard into editArea (optional)
-    editArea.addEventListener('input', ()=>{
-      // simple char limit hint
-      if(editArea.value.length > 120000){ editArea.style.border = '1px solid #ff7a7a'; }
-      else editArea.style.border = '';
-    });
-
-    // accessibility: focus outline
-    document.addEventListener('focusin', e=> e.target.style.outline = 'none');
-
-    // ready
-    updateCounts();
+    function loop(){
+      const dark=document.documentElement.getAttribute('data-theme')==='dark';
+      // top
+      ctxTop.clearRect(0,0,topCanvas.width,topCanvas.height);
+      if(dark){
+        drawAurora(ctxTop,topCanvas.width,topCanvas.height);
+        drawStars(ctxTop);
+        drawMeteor(ctxTop,topCanvas.width);
+        drawRocket(ctxTop,topCanvas.width,topCanvas.height);
+      }else{
+        drawClouds(ctxTop,topCanvas.width);
+        drawBalloon(ctxTop);
+      }
+      // bottom
+      ctxBottom.clearRect(0,0,bottomCanvas.width,bottomCanvas.height);
+      if(dark){
+        drawAurora(ctxBottom,bottomCanvas.width,bottomCanvas.height);
+        drawStars(ctxBottom);
+      }else{
+        drawClouds(ctxBottom,bottomCanvas.width);
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
   </script>
 </body>
-        </html>
-
+</html>
