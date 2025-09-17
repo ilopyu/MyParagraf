@@ -1,188 +1,224 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>My paragraph</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Paragraph</title>
   <style>
-    :root{
-      --bg:#fbfbff; --card:#ffffff; --muted:#6b7280; --accent:#0ea5a4; --accent-2:#7c3aed; 
-      --text:#0f172a;
-      --max-w:900px; --read-bar-height:6px;
-    }
-    [data-theme="dark"]{ 
-      --bg:#0b1020; --card:#071127; --muted:#9aa6bf; --accent:#34d399; --accent-2:#818cf8;
-      --text:#f3f4f6;
-    } 
-    *{box-sizing:border-box}
-    body{font-family:Inter, system-ui, Arial; margin:0; background:var(--bg); color:var(--text); line-height:1.65; overflow-x:hidden}
-    header{position:sticky; top:0; z-index:30; backdrop-filter: blur(6px); background:rgba(255,255,255,0.4); padding:12px 18px; display:flex; gap:12px; align-items:center}
-    [data-theme="dark"] header{background:rgba(7,17,39,0.4); color:var(--muted)}
-    .brand{font-weight:800; font-size:16px;}
-    .controls{margin-left:auto; display:flex; gap:8px; align-items:center}
-    button{background:transparent; border:1px solid rgba(15,23,42,0.06); padding:6px 10px; border-radius:8px; cursor:pointer}
-    [data-theme="dark"] button{border-color: rgba(255,255,255,0.1); color:var(--text)}
-    .container{max-width:var(--max-w); margin:28px auto; padding:0 18px}
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #000;
+      transition: background 0.3s, color 0.3s;
+      overflow-x: hidden;
+    }.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+}
 
-    .pill{display:inline-flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px; background:var(--card); box-shadow:0 6px 18px rgba(11,15,40,0.05);}
-    .editable{font-weight:700; font-size:20px}
-    .sub{font-weight:600; color:var(--muted)}
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    main{background:var(--card); border-radius:14px; padding:28px; margin-top:18px; box-shadow: 0 10px 30px rgba(11,15,40,0.06)}
-    .lead{font-size:18px; margin:0 0 18px 0; color:var(--muted)}
-    article{font-size:18px; color:inherit}
-    .dropcap:first-letter{float:left; font-size:4rem; line-height:1; padding-right:12px; font-weight:800; color:var(--accent);}
+header h1 {
+  font-size: 24px;
+  margin: 0;
+}
 
-    /* canvas animasi */
-    #animTop, #animBottom{position:absolute; left:0; width:100%; height:200px; z-index:0;}
-    #animTop{top:0;}
-    #animBottom{bottom:0; height:160px;}
-    body{position:relative; padding-bottom:180px;}
-    header, .container{position:relative; z-index:10;}
+header h2 {
+  font-size: 18px;
+  margin: 5px 0 0;
+  color: #555;
+}
+
+main {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 2;
+}
+
+/* Tombol */
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #007bff;
+  color: #fff;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+/* Mode gelap */
+body.dark {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+body.dark main {
+  background: #1e1e1e;
+  color: #f1f1f1;
+}
+
+body.dark header h2 {
+  color: #bbb;
+}
+
+/* Media Sosial */
+.socials {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.socials a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.socials a:hover {
+  transform: scale(1.1);
+}
+
+.socials svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Kanvas animasi */
+canvas.bgCanvas {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  z-index: 1;
+}
+
+#topCanvas {
+  top: 0;
+}
+
+#bottomCanvas {
+  bottom: 0;
+}
+
   </style>
 </head>
 <body>
-  <!-- Canvas animasi -->
-  <canvas id="animTop"></canvas>
-  <canvas id="animBottom"></canvas>
-
-  <header>
-    <div class="brand">Welcome</div>
+  <canvas id="topCanvas" class="bgCanvas"></canvas>  <div class="container">
     <div class="controls">
-      <button id="toggleTheme">🌙/☀️</button>
+      <button onclick="toggleDarkMode()">🌓 Mode</button>
     </div>
-  </header>
-
-  <div class="container">
-    <div class="pill">
-      <div>
-        <div class="editable" id="studentName">Fakhri Ahmad Alfanani</div>
-        <div class="sub" id="studentClass">XII-12</div>
-      </div>
-    </div>
-
+    <header>
+      <h1 id="studentName">Fakhri Ahmad Alfanani</h1>
+      <h2 id="studentClass">XII-12</h2>
+    </header>
     <main>
-      <p class="lead">Berpikir Komputasi</p>
-      <article id="article" class="dropcap">
-        <p id="contentP">
-          Berpikir komputasional adalah proses berpikir yang sistematis dan logis untuk mengidentifikasi, menganalisis, serta memecahkan masalah kompleks dengan cara memecahnya menjadi bagian-bagian sederhana agar lebih mudah dikelola. Konsep ini sebenarnya sudah ada sejak tahun 1950-an, diperkenalkan oleh Seymour Papert pada 1980, lalu dipopulerkan oleh Jeannette Wing pada 2006 yang menekankan bahwa kemampuan ini bermanfaat luas, bukan hanya untuk bidang komputer. Berpikir komputasional memberikan banyak manfaat, di antaranya meningkatkan kemampuan memecahkan masalah, mendorong kreativitas dan inovasi, mempermudah kolaborasi, mempersiapkan diri menghadapi tantangan dunia kerja, serta membantu belajar lebih efektif. Tujuan utamanya adalah memecahkan masalah kompleks dengan cara sistematis, merancang solusi kreatif, menganalisis data dengan efektif, meningkatkan komunikasi dan kolaborasi, serta melatih kemampuan belajar dan beradaptasi.
+      <p id="contentP">
+        Berpikir komputasional adalah proses berpikir yang sistematis dan logis untuk mengidentifikasi, menganalisis, serta memecahkan masalah kompleks dengan cara memecahnya menjadi bagian-bagian sederhana agar lebih mudah dikelola. Konsep ini sebenarnya sudah ada sejak tahun 1950-an, diperkenalkan oleh Seymour Papert pada 1980, lalu dipopulerkan oleh Jeannette Wing pada 2006 yang menekankan bahwa kemampuan ini bermanfaat luas, bukan hanya untuk bidang komputer. Berpikir komputasional memberikan banyak manfaat, di antaranya meningkatkan kemampuan memecahkan masalah, mendorong kreativitas dan inovasi, mempermudah kolaborasi, mempersiapkan diri menghadapi tantangan dunia kerja, serta membantu belajar lebih efektif. Tujuan utamanya adalah memecahkan masalah kompleks dengan cara sistematis, merancang solusi kreatif, menganalisis data dengan efektif, meningkatkan komunikasi dan kolaborasi, serta melatih kemampuan belajar dan beradaptasi.
 
 Untuk bisa menerapkannya, terdapat empat fondasi utama yang perlu dipahami, yakni abstraksi (menyaring hal penting dari suatu masalah), algoritma (menyusun langkah terstruktur), dekomposisi (memecah masalah besar menjadi bagian kecil), dan pengenalan pola (menggunakan solusi yang sudah ada pada masalah sejenis). Orang yang menguasai kemampuan ini biasanya memiliki karakteristik sebagai pemecah masalah yang baik, berpikir logis dan analitis, kreatif dan inovatif, komunikatif, serta mampu berkolaborasi dengan baik.
 
 Metode penerapan berpikir komputasional meliputi enam tahapan, yaitu mendeteksi masalah, melakukan dekomposisi, membuat representasi atau model masalah, menyusun algoritma, mengimplementasikan solusi, dan mengevaluasi hasilnya. Contoh penerapannya dalam kehidupan sehari-hari sangat beragam, seperti menyusun rencana perjalanan yang efisien, menganalisis data penjualan bisnis, mengoptimalkan kinerja website, merancang game edukasi interaktif, hingga membangun sistem robotika. Dari sini dapat disimpulkan bahwa berpikir komputasional bukan hanya berguna di dunia teknologi, melainkan juga relevan untuk berbagai bidang kerja dan kehidupan. Dengan pola pikir ini, seseorang akan lebih terstruktur, efisien, dan inovatif dalam menghadapi setiap masalah.
-        </p>
-      </article>
+      </p>
+      <div class="socials">
+        <a href="https://www.instagram.com/twelvepoint12_?igsh=b3k0N2FmNzJ0amxi" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224,202a53,53,0,1,0,53,53A53,53,0,0,0,224,202Zm124-41a54,54,0,0,0-30-30c-21-8-71-6-94-6s-73-2-94,6a54,54,0,0,0-30,30c-8,21-6,71-6,94s-2,73,6,94a54,54,0,0,0,30,30c21,8,71,6,94,6s73,2,94-6a54,54,0,0,0,30-30c8-21,6-71,6-94S356,182,348,161ZM224,338a82,82,0,1,1,82-82A82,82,0,0,1,224,338Zm85-148a19,19,0,1,1,19-19A19,19,0,0,1,309,190Z"/></svg>
+          Kelas
+        </a>
+        <a href="https://www.instagram.com/constellion46?igsh=MXZpNDd3NzZsd2Z6OA==" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224,202a53,53,0,1,0,53,53A53,53,0,0,0,224,202Zm124-41a54,54,0,0,0-30-30c-21-8-71-6-94-6s-73-2-94,6a54,54,0,0,0-30,30c-8,21-6,71-6,94s-2,73,6,94a54,54,0,0,0,30,30c21,8,71,6,94,6s73,2,94-6a54,54,0,0,0,30-30c8-21,6-71,6-94S356,182,348,161ZM224,338a82,82,0,1,1,82-82A82,82,0,0,1,224,338Zm85-148a19,19,0,1,1,19-19A19,19,0,0,1,309,190Z"/></svg>
+          Angkatan
+        </a>
+      </div>
     </main>
-  </div>
+  </div><canvas id="bottomCanvas" class="bgCanvas"></canvas>
 
   <script>
-    // --- Tema ---
-    const toggleTheme = document.getElementById('toggleTheme');
-    toggleTheme.addEventListener('click', ()=>{
-      const t = document.documentElement.getAttribute('data-theme');
-      if(t==='dark') document.documentElement.removeAttribute('data-theme');
-      else document.documentElement.setAttribute('data-theme','dark');
-    });
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      drawBackground();
+    }
 
-    // --- Canvas Animasi ---
-    const topCanvas = document.getElementById('animTop');
-    const bottomCanvas = document.getElementById('animBottom');
+    const topCanvas = document.getElementById('topCanvas');
+    const bottomCanvas = document.getElementById('bottomCanvas');
     const ctxTop = topCanvas.getContext('2d');
     const ctxBottom = bottomCanvas.getContext('2d');
 
-    function resizeCanvas(){
+    function resizeCanvas() {
       topCanvas.width = window.innerWidth;
       bottomCanvas.width = window.innerWidth;
       topCanvas.height = 200;
-      bottomCanvas.height = 160;
+      bottomCanvas.height = 200;
+      drawBackground();
     }
+
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // objek animasi
-    let stars=[], meteors=[], clouds=[], balloons=[];
-    for(let i=0;i<80;i++){
-      stars.push({x:Math.random()*window.innerWidth,y:Math.random()*200,r:Math.random()*1.5});
-    }
-    for(let i=0;i<10;i++){
-      clouds.push({x:Math.random()*window.innerWidth,y:Math.random()*80+20,s:50+Math.random()*100});
-    }
-    balloons.push({x:50,y:120});
-
-    function drawAurora(ctx,w,h){
-      ctx.beginPath();
-      ctx.moveTo(0,h/2);
-      for(let x=0;x<=w;x+=20){
-        const y = h/2 + Math.sin((x/50)+Date.now()/2000)*30;
-        ctx.lineTo(x,y);
-      }
-      ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
-      const grad = ctx.createLinearGradient(0,0,w,h);
-      grad.addColorStop(0,"rgba(124,58,237,0.4)");
-      grad.addColorStop(1,"rgba(52,211,153,0.2)");
-      ctx.fillStyle=grad; ctx.fill();
-    }
-
-    function drawStars(ctx){
-      ctx.fillStyle="white";
-      stars.forEach(s=>{ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();});
-    }
-
-    function drawMeteor(ctx,w){
-      if(Math.random()<0.01){
-        meteors.push({x:Math.random()*w,y:0,len:80,sp:4});
-      }
-      ctx.strokeStyle="rgba(255,255,255,0.8)";
-      meteors.forEach(m=>{ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.len,m.y+m.len/2);ctx.stroke(); m.x+=m.sp; m.y+=m.sp/2;});
-      meteors=meteors.filter(m=>m.y<200);
-    }
-
-    function drawRocket(ctx,w,h){
-      const t=Date.now()/800;
-      const x=w/2+Math.sin(t)*60, y=h-50-Math.sin(t/2)*20;
-      ctx.fillStyle="gray"; ctx.fillRect(x,y,12,30);
-      ctx.fillStyle="red"; ctx.beginPath();ctx.moveTo(x-4,y);ctx.lineTo(x+16,y);ctx.lineTo(x+6,y-20);ctx.closePath();ctx.fill();
-      ctx.fillStyle="orange"; ctx.beginPath();ctx.moveTo(x,y+30);ctx.lineTo(x+12,y+30);ctx.lineTo(x+6,y+45);ctx.closePath();ctx.fill();
-    }
-
-    function drawClouds(ctx,w){
-      ctx.fillStyle="rgba(255,255,255,0.8)";
-      clouds.forEach(c=>{ctx.beginPath();ctx.arc(c.x,c.y,c.s/2,0,Math.PI*2);ctx.fill(); c.x+=0.2; if(c.x-c.s> w) c.x=-c.s;});
-    }
-
-    function drawBalloon(ctx){
-      balloons.forEach(b=>{
-        ctx.fillStyle="red"; ctx.beginPath();ctx.ellipse(b.x,b.y,15,20,0,0,Math.PI*2);ctx.fill();
-        ctx.strokeStyle="black"; ctx.beginPath();ctx.moveTo(b.x,b.y+20);ctx.lineTo(b.x,b.y+40);ctx.stroke();
-        b.y-=0.2; if(b.y<-20){b.y=150; b.x=Math.random()*window.innerWidth;}
-      });
-    }
-
-    function loop(){
-      const dark=document.documentElement.getAttribute('data-theme')==='dark';
-      // top
+    function drawBackground() {
       ctxTop.clearRect(0,0,topCanvas.width,topCanvas.height);
-      if(dark){
-        drawAurora(ctxTop,topCanvas.width,topCanvas.height);
-        drawStars(ctxTop);
-        drawMeteor(ctxTop,topCanvas.width);
-        drawRocket(ctxTop,topCanvas.width,topCanvas.height);
-      }else{
-        drawClouds(ctxTop,topCanvas.width);
-        drawBalloon(ctxTop);
-      }
-      // bottom
       ctxBottom.clearRect(0,0,bottomCanvas.width,bottomCanvas.height);
-      if(dark){
-        drawAurora(ctxBottom,bottomCanvas.width,bottomCanvas.height);
-        drawStars(ctxBottom);
-      }else{
-        drawClouds(ctxBottom,bottomCanvas.width);
+
+      if (document.body.classList.contains('dark')) {
+        // Mode gelap: aurora sederhana + bintang + meteor
+        ctxTop.fillStyle = '#0a0a2a';
+        ctxTop.fillRect(0,0,topCanvas.width,topCanvas.height);
+        for(let i=0;i<100;i++){
+          ctxTop.fillStyle = 'white';
+          ctxTop.fillRect(Math.random()*topCanvas.width, Math.random()*topCanvas.height, 2,2);
+        }
+        // Aurora sederhana
+        let gradient = ctxBottom.createLinearGradient(0,0,bottomCanvas.width, bottomCanvas.height);
+        gradient.addColorStop(0,'#3a0ca3');
+        gradient.addColorStop(1,'#4361ee');
+        ctxBottom.fillStyle = gradient;
+        ctxBottom.fillRect(0,0,bottomCanvas.width,bottomCanvas.height/2);
+      } else {
+        // Mode terang: langit biru + awan sederhana
+        ctxTop.fillStyle = '#87CEEB';
+        ctxTop.fillRect(0,0,topCanvas.width,topCanvas.height);
+        for(let i=0;i<5;i++){
+          ctxTop.fillStyle = 'white';
+          ctxTop.beginPath();
+          let x = Math.random()*topCanvas.width;
+          let y = Math.random()*80+20;
+          ctxTop.arc(x,y,20,0,Math.PI*2);
+          ctxTop.arc(x+25,y,20,0,Math.PI*2);
+          ctxTop.arc(x+50,y,20,0,Math.PI*2);
+          ctxTop.fill();
+        }
+        // bawah = hijau rumput
+        ctxBottom.fillStyle = '#228B22';
+        ctxBottom.fillRect(0,bottomCanvas.height-50,bottomCanvas.width,50);
       }
-      requestAnimationFrame(loop);
     }
-    loop();
-  </script>
-</body>
+
+    drawBackground();
+  </script></body>
 </html>
